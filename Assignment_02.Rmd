@@ -1,0 +1,56 @@
+---
+title: "R Markdown and Plotly"
+subtitle: "Food Consumption in UK"
+author: "Rafael Gurgel"
+date: "31/01/2018"
+output: ioslides_presentation
+fontsize: 8pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(dplyr)
+library(plotly)
+```
+
+## Introduction
+This presentation is the Week 3 Assignment for the course Developing Data Products on Coursera.
+
+We'll analyse the average comsumption (in grams per person, per week) of 17 types of food in the four countries in the UK in 1997 (Source: DEFRA). This data is a classical PCA example. 
+
+On the next slide, we'll check the consumption by countries. If you click on the countries legend you can hide/show their bars!!! 
+
+You can check the code [here](https://github.com/rafagurgel/DDP_Week03_Assignment)
+
+
+## Food Consumption
+
+```{r, fig.height=5}
+food <- read.csv('food_consumptionUK.csv')
+food<- food %>% arrange(Food)
+rownames(food) <- food[,1]
+food <- food[,-1]
+names(food) <- gsub('_','\\.', names(food))
+food.names <- factor(rownames(food), levels = rownames(food))
+food.var <- apply(food, 1, var)
+plot_ly(x = food[,1], name =  names(food)[1], y = paste(food.names,' '), type = 'bar', orientation = 'h',
+        marker = list(line = list(color = 'rgb(0, 0, 0)', width = 0.75)))%>%
+  add_trace(x = food[,2], name =  names(food)[2]) %>%
+  add_trace(x = food[,3], name =  names(food)[3]) %>%
+  add_trace(x = food[,4], name =  names(food)[4]) %>%
+  layout(title = 'Average Food Consumption in grams per person per year ',
+         legend = list(orientation = 'h'),
+         yaxis = list(title = '',
+                      showgrid = FALSE,
+                      showline = FALSE,
+                      showticklabels = TRUE,
+                      zeroline = FALSE,
+                      autorange = 'reversed',
+                      tickfont = list(size = 10)),
+         xaxis = list(showgrid = T,
+                      showline = T,
+                      showticklabels = T,
+                      zeroline = T,
+                      tickfont = list(size = 10)),
+         margin = list(l = 110, r = 20, t = 40, b = 10))
+```
